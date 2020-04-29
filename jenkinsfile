@@ -1,0 +1,10 @@
+node {
+ 
+  stage 'Docker build'
+  docker.build('demo-container-via-jenkins')
+ 
+  stage 'Docker push'
+  docker.withRegistry('https://800754320539.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:demo-ecr-credentials') {
+    docker.image('demo-container-via-jenkins').push('latest')
+  }
+}
