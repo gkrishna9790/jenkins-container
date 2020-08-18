@@ -1,0 +1,17 @@
+
+
+
+node {
+    def app
+    stage('Clone repository') {
+        git branch: "master", url: "git@github.com:example-dev/go-queue-consumer.git", credentialsId: "github-cred"
+    }
+    stage('Build image') {
+        sh "docker build --build-arg APP_NAME=receipts -t 464045059055.dkr.ecr.us-east-1.amazonaws.com/test-jenkins-container:latest -f docker/prod/Dockerfile ."
+    }
+    stage('Push image') {
+        docker.withRegistry('https://464045059055.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-2:demo-ecr-credentials') {
+            sh "docker push 464045059055.dkr.ecr.us-east-1.amazonaws.com/test-jenkins-container:latest"
+        }
+    }
+}

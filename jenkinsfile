@@ -1,10 +1,22 @@
-node {
- 
-  stage 'Docker build'
-  docker.build('demo-container-via-jenkins')
- 
-  stage 'Docker push'
-  docker.withRegistry('https://800754320539.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:demo-ecr-credentials') {
-    docker.image('demo-container-via-jenkins').push('latest')
-  }
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                bat  'docker build -t test-jenkins-container -f Dockerfile .'
+            }
+        }
+        stage('Push image') {
+         steps {
+           withDockerRegistry([url: "'https://464045059055.dkr.ecr.us-east-1.amazonaws.com/test-jenkins-container'",credentialsId: "ecr:us-east-1:demo-ecr-credentials"]) {
+           bat 'docker push test-jenkins-container:latest'
+               }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
 }
